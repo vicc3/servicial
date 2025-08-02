@@ -1,0 +1,211 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native'; 
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
+import { Appbar, TextInput, Button, useTheme, Title } from 'react-native-paper'; 
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; 
+
+type Props = NativeStackScreenProps<RootStackParamList, 'RegisterWorker'>;
+
+const RegisterUserScreen: React.FC<Props> = ({ navigation }) => {
+  const theme = useTheme(); 
+
+  const [nombreCompleto, setNombreCompleto] = useState('');
+  const [correoElectronico, setCorreoElectronico] = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const [confirmarContrasena, setConfirmarContrasena] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [ciudadRegion, setCiudadRegion] = useState('');
+
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+
+  const handleRegister = () => {
+    console.log({
+      nombreCompleto,
+      correoElectronico,
+      contrasena,
+      telefono,
+      ciudadRegion,
+    });
+  };
+
+  return (
+    <View style={styles.fullScreenContainer}>
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        {/* <Appbar.Content title="Registro" />  */}
+      </Appbar.Header>
+
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <Title style={styles.mainTitle}>Registro de Usuario</Title>
+
+        <TextInput
+          label="Nombre completo"
+          value={nombreCompleto}
+          onChangeText={setNombreCompleto}
+          mode="outlined" 
+          style={styles.textInput}
+          outlineColor={theme.colors.onSurfaceVariant} 
+          activeOutlineColor={theme.colors.primary} 
+          theme={{ colors: { background: theme.colors.surfaceVariant } }} 
+        />
+
+        <TextInput
+          label="Correo electrónico"
+          value={correoElectronico}
+          onChangeText={setCorreoElectronico}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          mode="outlined"
+          style={styles.textInput}
+          outlineColor={theme.colors.onSurfaceVariant}
+          activeOutlineColor={theme.colors.primary}
+          theme={{ colors: { background: theme.colors.surfaceVariant } }}
+        />
+
+        <TextInput
+          label="Contraseña"
+          value={contrasena}
+          onChangeText={setContrasena}
+          secureTextEntry={!passwordVisible}
+          mode="outlined"
+          style={styles.textInput}
+          outlineColor={theme.colors.onSurfaceVariant}
+          activeOutlineColor={theme.colors.primary}
+          theme={{ colors: { background: theme.colors.surfaceVariant } }}
+          right={
+            <TextInput.Icon
+              icon={passwordVisible ? "eye-off" : "eye"}
+              onPress={() => setPasswordVisible(!passwordVisible)}
+            />
+          }
+        />
+
+        <TextInput
+          label="Confirmar contraseña"
+          value={confirmarContrasena}
+          onChangeText={setConfirmarContrasena}
+          secureTextEntry={!confirmPasswordVisible}
+          mode="outlined"
+          style={styles.textInput}
+          outlineColor={theme.colors.onSurfaceVariant}
+          activeOutlineColor={theme.colors.primary}
+          theme={{ colors: { background: theme.colors.surfaceVariant } }}
+          right={
+            <TextInput.Icon
+              icon={confirmPasswordVisible ? "eye-off" : "eye"}
+              onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+            />
+          }
+        />
+
+        <View style={styles.phoneInputContainer}>
+          <TextInput
+            label="+52" 
+            value="+52"
+            editable={false} 
+            mode="outlined"
+            style={[styles.phonePrefixInput, { backgroundColor: theme.colors.surfaceVariant }]}
+            outlineColor={theme.colors.onSurfaceVariant}
+            activeOutlineColor={theme.colors.primary}
+            theme={{ colors: { background: theme.colors.surfaceVariant } }}
+          />
+          <TextInput
+            label="(999) 111-0000"
+            value={telefono}
+            onChangeText={setTelefono}
+            keyboardType="phone-pad"
+            mode="outlined"
+            style={[styles.textInput, styles.phoneMainInput]}
+            outlineColor={theme.colors.onSurfaceVariant}
+            activeOutlineColor={theme.colors.primary}
+            theme={{ colors: { background: theme.colors.surfaceVariant } }}
+          />
+        </View>
+
+        <TextInput
+          label="Ciudad / región"
+          value={ciudadRegion}
+          onChangeText={setCiudadRegion}
+          mode="outlined"
+          style={styles.textInput}
+          outlineColor={theme.colors.onSurfaceVariant}
+          activeOutlineColor={theme.colors.primary}
+          theme={{ colors: { background: theme.colors.surfaceVariant } }}
+        />
+
+        <Button
+          mode="contained" 
+          onPress={handleRegister}
+          style={[styles.button, { backgroundColor: theme.colors.primary }]}
+          labelStyle={styles.buttonLabel}
+        >
+          Registrar
+        </Button>
+
+        {/* Botón Cancelar */}
+        <Button
+          mode="text" 
+          onPress={() => navigation.goBack()}
+          style={styles.button}
+          labelStyle={{ color: theme.colors.primary }} 
+        >
+          Cancelar
+        </Button>
+      </ScrollView>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  fullScreenContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollViewContent: {
+    flexGrow: 1, 
+    padding: 24,
+    alignItems: 'center',
+    paddingBottom: 40, 
+  },
+  mainTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 30, 
+    textAlign: 'center',
+    color: '#333',
+  },
+  textInput: {
+    width: '100%',
+    marginBottom: 15, 
+    borderRadius: 10, 
+  },
+  phoneInputContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  phonePrefixInput: {
+    width: '25%', 
+    marginRight: 10,
+    borderRadius: 10,
+  },
+  phoneMainInput: {
+    flex: 1, 
+    borderRadius: 10,
+  },
+  button: {
+    width: '100%',
+    marginVertical: 10, 
+    borderRadius: 10, 
+    paddingVertical: 5, 
+  },
+  buttonLabel: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});
+
+export default RegisterUserScreen;

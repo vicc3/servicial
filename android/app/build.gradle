@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+apply plugin: "com.google.gms.google-services"
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -116,4 +117,18 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    // Import the Firebase BoM (Bill of Materials)
+    // Esto asegura que todas las dependencias de Firebase que se añadan estén en versiones compatibles.
+    // Verifica la última versión del BoM en la documentación de Firebase (https://firebase.google.com/docs/android/setup#add_the_sdk)
+    implementation platform('com.google.firebase:firebase-bom:32.x.x') // Reemplaza '32.x.x' con la última versión, por ejemplo, 32.7.4 o más reciente.
+
+    // A partir de aquí, si **no** usaras @react-native-firebase, añadirías las dependencias específicas:
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
+
+    // PERO, como estás usando @react-native-firebase, estos se agregan automáticamente.
+    // Simplemente asegúrate de haber instalado los módulos de @react-native-firebase que necesitas
+    // (ej. `yarn add @react-native-firebase/auth`) y que el `plugin` de google-services esté aplicado.
 }

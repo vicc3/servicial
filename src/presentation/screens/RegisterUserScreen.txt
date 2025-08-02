@@ -1,0 +1,262 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native'; 
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
+import { Appbar, TextInput, Button, useTheme, Title } from 'react-native-paper'; 
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; 
+
+// Importa los módulos de Firebase
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'RegisterUser'>; 
+
+const RegisterUserScreen: React.FC<Props> = ({ navigation }) => {
+  const theme = useTheme(); 
+
+  // Estados para los campos del formulario
+  const [nombreCompleto, setNombreCompleto] = useState('');
+  const [correoElectronico, setCorreoElectronico] = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const [confirmarContrasena, setConfirmarContrasena] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [ciudadRegion, setCiudadRegion] = useState('');
+  const [loading, setLoading] = useState(false); // Nuevo estado para el loading
+
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+
+  // Función asíncrona para manejar el registro con Firebase
+  const handleRegister = async () => {
+    // 1. Validaciones básicas
+    if (!nombreCompleto || !correoElectronico || !contrasena || !confirmarContrasena) {
+      Alert.alert('Error', 'Por favor, completa todos los campos obligatorios.');
+      return;
+    }
+    if (contrasena !== confirmarContrasena) {
+      Alert.alert('Error', 'Las contraseñas no coinciden.');
+      return;
+    }
+    setLoading(true); // Activa el loading
+
+    try {
+      // 2. Crear usuario en Firebase Authentication
+      const userCredential = await auth().createUserWithEmailAndPassword(correoElectronico, contrasena);
+      const user = userCredential.user;
+      console.log('Usuario creado en Firebase Auth:', user.uid);
+      
+      // 3. Guardar datos adicionales en Cloud Firestore
+      await firestore().collection('users').doc(user.uid).set({
+        nombreCompleto: nombreCompleto,
+        correoElectronico: correoElectronico,
+        telefono: telefono,
+        ciudadRegion: ciudadRegion,
+        createdAt: firestore.FieldValue.serverTimestamp(), // Marca de tiempo del servidor
+        role: 'user' // Rol por defecto
+      });
+
+      console.log('Datos del usuario guardados en Firestore.');
+
+      // 4. Navegar a la siguiente pantalla (ej. Home)
+      // navigation.navigate('Home'); 
+      Alert.alert('Éxito', '¡Usuario registrado correctamente!');
+      navigation.navigate('Login'); // o la pantalla que desees
+
+    } catch (error: any) {
+      // 5. Manejo de errores de Firebase
+      console.error('Error de registro:', error);
+      let errorMessage = 'Ocurrió un error inesperado al registrar el usuario.';
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = 'La dirección de correo electrónico ya está en uso.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = 'La dirección de correo electrónico no es válida.';
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = 'La contraseña es demasiado débil (debe tener al menos 6 caracteres).';
+      }
+      Alert.alert('Error de registro', errorMessage);
+    } finally {
+      setLoading(false); // Desactiva el loading
+    }
+  };
+
+  return (
+    <View style={styles.fullScreenContainer}> 
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Registro" />
+      </Appbar.Header>
+
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <Title style={styles.mainTitle}>Registro de Usuario</Title>
+
+        <TextInput
+          label="Nombre completo"
+          value={nombreCompleto}
+          onChangeText={setNombreCompleto}
+          mode="outlined" 
+          style={styles.textInput}
+          outlineColor={theme.colors.onSurfaceVariant} 
+          activeOutlineColor={theme.colors.primary} 
+          theme={{ colors: { background: theme.colors.surfaceVariant } }} 
+        />
+
+        <TextInput
+          label="Correo electrónico"
+          value={correoElectronico}
+          onChangeText={setCorreoElectronico}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          mode="outlined"
+          style={styles.textInput}
+          outlineColor={theme.colors.onSurfaceVariant}
+          activeOutlineColor={theme.colors.primary}
+          theme={{ colors: { background: theme.colors.surfaceVariant } }}
+        />
+
+        <TextInput
+          label="Contraseña"
+          value={contrasena}
+          onChangeText={setContrasena}
+          secureTextEntry={!passwordVisible}
+          mode="outlined"
+          style={styles.textInput}
+          outlineColor={theme.colors.onSurfaceVariant}
+          activeOutlineColor={theme.colors.primary}
+          theme={{ colors: { background: theme.colors.surfaceVariant } }}
+          right={
+            <TextInput.Icon
+              icon={passwordVisible ? "eye-off" : "eye"}
+              onPress={() => setPasswordVisible(!passwordVisible)}
+            />
+          }
+        />
+
+        <TextInput
+          label="Confirmar contraseña"
+          value={confirmarContrasena}
+          onChangeText={setConfirmarContrasena}
+          secureTextEntry={!confirmPasswordVisible}
+          mode="outlined"
+          style={styles.textInput}
+          outlineColor={theme.colors.onSurfaceVariant}
+          activeOutlineColor={theme.colors.primary}
+          theme={{ colors: { background: theme.colors.surfaceVariant } }}
+          right={
+            <TextInput.Icon
+              icon={confirmPasswordVisible ? "eye-off" : "eye"}
+              onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+            />
+          }
+        />
+
+        <View style={styles.phoneInputContainer}>
+          <TextInput
+            label="+52" 
+            value="+52"
+            editable={false} 
+            mode="outlined"
+            style={[styles.phonePrefixInput, { backgroundColor: theme.colors.surfaceVariant }]}
+            outlineColor={theme.colors.onSurfaceVariant}
+            activeOutlineColor={theme.colors.primary}
+            theme={{ colors: { background: theme.colors.surfaceVariant } }}
+          />
+          <TextInput
+            label="(999) 111-0000"
+            value={telefono}
+            onChangeText={setTelefono}
+            keyboardType="phone-pad"
+            mode="outlined"
+            style={[styles.textInput, styles.phoneMainInput]}
+            outlineColor={theme.colors.onSurfaceVariant}
+            activeOutlineColor={theme.colors.primary}
+            theme={{ colors: { background: theme.colors.surfaceVariant } }}
+          />
+        </View>
+
+        <TextInput
+          label="Ciudad / región"
+          value={ciudadRegion}
+          onChangeText={setCiudadRegion}
+          mode="outlined"
+          style={styles.textInput}
+          outlineColor={theme.colors.onSurfaceVariant}
+          activeOutlineColor={theme.colors.primary}
+          theme={{ colors: { background: theme.colors.surfaceVariant } }}
+        />
+
+        <Button
+          mode="contained" 
+          onPress={handleRegister}
+          style={[styles.button, { backgroundColor: theme.colors.primary }]}
+          labelStyle={styles.buttonLabel}
+          loading={loading} // Muestra un spinner si el registro está en curso
+          disabled={loading} // Deshabilita el botón mientras se procesa la solicitud
+        >
+          Registrar
+        </Button>
+
+        <Button
+          mode="text" 
+          onPress={() => navigation.goBack()}
+          style={styles.button}
+          labelStyle={{ color: theme.colors.primary }} 
+          disabled={loading}
+        >
+          Cancelar
+        </Button>
+      </ScrollView>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  fullScreenContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollViewContent: {
+    flexGrow: 1, 
+    padding: 24,
+    alignItems: 'center',
+    paddingBottom: 40, 
+  },
+  mainTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 30, 
+    textAlign: 'center',
+    color: '#333',
+  },
+  textInput: {
+    width: '100%',
+    marginBottom: 15, 
+    borderRadius: 10, 
+  },
+  phoneInputContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  phonePrefixInput: {
+    width: '25%', 
+    marginRight: 10,
+    borderRadius: 10,
+  },
+  phoneMainInput: {
+    flex: 1, 
+    borderRadius: 10,
+  },
+  button: {
+    width: '100%',
+    marginVertical: 10, 
+    borderRadius: 10, 
+    paddingVertical: 5, 
+  },
+  buttonLabel: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});
+
+export default RegisterUserScreen;

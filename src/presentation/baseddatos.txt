@@ -1,0 +1,111 @@
+erDiagram
+    users {
+        string id_usuario PK "UID de Firebase Auth"
+        string email
+        string nombre
+        string apellido
+        string telefono
+        string rol "('cliente', 'proveedor')"
+        timestamp fechaRegistro
+        timestamp ultimaConexion
+        string estado
+    }
+
+    providers {
+        string userId PK,FK "UID de usuario con rol 'proveedor'"
+        string descripcion
+        number calificacionPromedio
+        object ubicacionGeografica
+        array serviciosOfrecidos
+        object disponibilidad
+        string fotoPerfilUrl
+        string licenciaNumero
+    }
+
+    serviceTypes {
+        string id_tipo_servicio PK
+        string nombre
+        string descripcion
+        string iconoUrl
+    }
+
+    serviceRequests {
+        string id_solicitud PK
+        string clientId FK "UID del cliente"
+        string serviceTypeId FK
+        string descripcion
+        object ubicacionServicio
+        string direccionTexto
+        timestamp fechaSolicitud
+        timestamp fechaRequerida
+        number presupuestoEstimado
+        string estado
+        string providerId FK "UID del proveedor que aceptó"
+    }
+
+    offers {
+        string id_oferta PK
+        string providerId FK "UID del proveedor que oferta"
+        number precioOfrecido
+        string mensajeProveedor
+        timestamp fechaOferta
+        string estadoOferta
+    }
+
+    transactions {
+        string id_transaccion PK
+        string requestId FK
+        string offerId FK
+        string clientId FK
+        string providerId FK
+        number montoFinal
+        timestamp fechaInicioServicio
+        timestamp fechaFinServicio
+        string estadoPago
+    }
+
+    reviews {
+        string id_resena PK
+        string transactionId FK
+        string reviewerId FK "UID del cliente"
+        string reviewedId FK "UID del proveedor"
+        number calificacion
+        string comentario
+        timestamp fechaResena
+    }
+
+    chats {
+        string id_chat PK "Combinación de UIDs o ID único"
+        string participant1Id FK
+        string participant2Id FK
+        string requestId FK
+        timestamp ultimaActividad
+    }
+
+    messages {
+        string id_mensaje PK
+        string senderId FK
+        string receiverId FK
+        string contenido
+        timestamp timestamp
+        boolean leido
+    }
+
+    users ||--o{ providers : "tiene rol de"
+    users ||--o{ serviceRequests : "crea"
+    users ||--o{ reviews : "califica"
+    users ||--o{ chats : "participa_en"
+
+    serviceTypes ||--o{ serviceRequests : "solicita"
+
+    serviceRequests ||--o{ offers : "recibe"
+    serviceRequests ||--o{ transactions : "genera"
+    serviceRequests ||--o{ chats : "asociado_a"
+
+    providers ||--o{ offers : "hace"
+
+    offers ||--o| transactions : "aceptada_para"
+
+    transactions ||--o{ reviews : "es_base_para"
+
+    chats ||--o{ messages : "contiene"

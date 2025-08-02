@@ -73,3 +73,7 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Firebase configuration files (contains sensitive data)
+android/app/google-services.json
+ios/project00/GoogleService-Info.plist
