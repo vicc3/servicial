@@ -3,8 +3,8 @@ import { View, StyleSheet, Alert } from 'react-native';
 import { Text, TextInput, Button, IconButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
-import { signInWithEmailAndPassword } from '../../config/firebase'; 
+import { RootStackParamList } from '../../navigation/types';
+import { firebaseService } from '../../config/firebase'; 
 
 const LoginScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -21,9 +21,10 @@ const LoginScreen: React.FC = () => {
 
     setLoading(true);
     try {
-      const result = await signInWithEmailAndPassword(email, password);
+      const result = await firebaseService.signInWithEmailAndPassword(email, password);
       if (result.success) {
-        navigation.navigate('Home');
+        // Navigate based on user role - for now, default to ClientHome
+        navigation.navigate('ClientHome');
       } else {
         Alert.alert('Error', 'Credenciales incorrectas');
       }

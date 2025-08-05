@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Alert } from 'react-native'; 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 import { Appbar, TextInput, Button, useTheme, Title } from 'react-native-paper'; 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; 
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { useUserRole } from '../../hooks/useUserRole';
 
 // Definimos el tipo de props que espera esta pantalla, incluyendo el parámetro `role`
 type Props = NativeStackScreenProps<RootStackParamList, 'RegistrationScreen'>;
@@ -16,7 +17,7 @@ const RegistrationScreen: React.FC<Props> = ({ navigation, route }) => {
 
   // Estados para los campos del formulario
   const [nombreCompleto, setNombreCompleto] = useState('');
-  const [correoElectronico, setCorreoElectronico] = useState('');
+  const [email, setEmail] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [confirmarContrasena, setConfirmarContrasena] = useState('');
   const [telefono, setTelefono] = useState('');
@@ -29,7 +30,7 @@ const RegistrationScreen: React.FC<Props> = ({ navigation, route }) => {
   // Función asíncrona para manejar el registro con Firebase
   const handleRegister = async () => {
     // 1. Validaciones básicas
-    if (!nombreCompleto || !correoElectronico || !contrasena || !confirmarContrasena) {
+    if (!nombreCompleto || !email || !contrasena || !confirmarContrasena) {
       Alert.alert('Error', 'Por favor, completa todos los campos obligatorios.');
       return;
     }
@@ -41,13 +42,13 @@ const RegistrationScreen: React.FC<Props> = ({ navigation, route }) => {
 
     try {
       // 2. Crear usuario en Firebase Authentication
-      const userCredential = await auth().createUserWithEmailAndPassword(correoElectronico, contrasena);
+      const userCredential = await auth().createUserWithEmailAndPassword(email, contrasena);
       const user = userCredential.user;
       
       // 3. Guardar datos adicionales en Cloud Firestore, incluyendo el rol
       await firestore().collection('users').doc(user.uid).set({
         nombreCompleto: nombreCompleto,
-        correoElectronico: correoElectronico,
+        correoElectronico: email,
         telefono: telefono,
         ciudadRegion: ciudadRegion,
         createdAt: firestore.FieldValue.serverTimestamp(),
@@ -95,8 +96,8 @@ const RegistrationScreen: React.FC<Props> = ({ navigation, route }) => {
 
         <TextInput
           label="Correo electrónico"
-          value={correoElectronico}
-          onChangeText={setCorreoElectronico}
+          value={email}
+          onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
           mode="outlined"

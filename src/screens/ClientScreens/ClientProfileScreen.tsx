@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Alert, ActivityIndicator, Image, TouchableOpacity, Switch, Dimensions } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 import { Appbar, useTheme, Title, Text, Card, Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import ClientBottomTabs from '../../navigation/ClientBottomTabNavigator';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ClientProfile'>;
 
@@ -166,18 +167,7 @@ const ClientProfileScreen: React.FC<Props> = ({ navigation }) => {
       </ScrollView>
 
       {/* Barra de navegación inferior */}
-      <Appbar style={styles.bottomNavigation}>
-        <Appbar.Action
-          icon="home"
-          onPress={() => navigation.navigate('Home')}
-          color={theme.colors.onSurface}
-        />
-        <Appbar.Action
-          icon="account"
-          onPress={() => navigation.navigate('ClientProfile')}
-          color={theme.colors.primary}
-        />
-      </Appbar>
+      <ClientBottomTabs />
     </View>
   );
 };
@@ -293,19 +283,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
-  bottomNavigation: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#fff',
-    elevation: 4,
-    borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
+
 });
 
 export default ClientProfileScreen;

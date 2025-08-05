@@ -3,7 +3,7 @@ import React from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { PaperProvider, DefaultTheme } from 'react-native-paper';
 //comp navegación principal
-import AppNavigator from './src/presentation/navigation/index';
+import AppNavigator from './src/navigation/index';
 
 const theme = {
   ...DefaultTheme,

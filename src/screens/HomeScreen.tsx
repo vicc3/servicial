@@ -2,11 +2,9 @@ import React from 'react';
 import { View, StyleSheet, ScrollView, Image, Dimensions } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
-import { Appbar, useTheme, Title, Paragraph, Card, IconButton, Text } from 'react-native-paper';
+import { useTheme, Title, Paragraph, Card, IconButton, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-import Profile from './ProfileLoader';
+import BottomNavigationBar from '../navigation/ClientBottomTabNavigator';
 
 
 
@@ -17,10 +15,6 @@ const { width } = Dimensions.get('window'); // Obtenemos el ancho de la pantalla
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const theme = useTheme();
-
-  const _handleProfile = (  ) => {
-    navigation.navigate('Profile'); // This will work because navigation is passed from the stack
-  };
 
   // Datos de ejemplo para las tarjetas de carrusel (Bienvenido)
   const welcomeCards = [
@@ -119,18 +113,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       </ScrollView>
       
       {/* Navegación inferior fija */}
-      <Appbar style={styles.bottomNavigation}>
-        <Appbar.Action
-          icon="home"
-          onPress={() => navigation.navigate('Home')}
-          color={theme.colors.primary}
-        />
-        <Appbar.Action
-          icon="account-outline"
-          onPress={() => _handleProfile } // Redirige a la pantalla de perfil
-          color={theme.colors.onSurface}
-        />
-      </Appbar>
+      <BottomNavigationBar currentScreen="Home" />
     </View>
   );
 };
@@ -227,19 +210,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#888',
   },
-  bottomNavigation: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#fff',
-    elevation: 4,
-    borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
+
 });
 
 export default HomeScreen;
