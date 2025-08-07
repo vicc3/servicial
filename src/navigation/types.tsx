@@ -1,3 +1,4 @@
+import RegistrationScreen from '../screens/common/RegisterScreen';
 
 // navigation
 export type AuthStackParamList = {
@@ -10,7 +11,7 @@ export type AuthStackParamList = {
 };
 
 export type ClientStackParamList = {
-  ClientHome: undefined;
+  ClientMain: undefined;
   ClientProfile: undefined;
   ClientSettings: undefined;
   ClientMessages: undefined;
@@ -21,7 +22,7 @@ export type ClientStackParamList = {
 };
 
 export type WorkerStackParamList = {
-  WorkerHome: undefined;
+  WorkerMain: undefined;
   WorkerProfile: undefined;
   WorkerSettings: undefined;
   WorkerMessages: undefined;
@@ -31,7 +32,11 @@ export type WorkerStackParamList = {
   WorkerOrderTracking: undefined;
 };
 
-export type RootStackParamList = AuthStackParamList & 
-  ClientStackParamList &
-  WorkerStackParamList;
-
+export type RootStackParamList = {
+  Auth: undefined;
+  ClientApp: undefined;
+  WorkerApp: undefined;
+  RegisterMenu: undefined;
+  RegistrationScreen: { role: 'user' | 'worker' };
+  Login: undefined;
+};

@@ -9,26 +9,36 @@ export const useUserRole = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserRole = async () => {
+    const unsubscribe = auth().onAuthStateChanged(async (user) => {
       try {
-        const currentUser = auth().currentUser;
-        if (currentUser) {
-          const userDoc = await firestore().collection('users').doc(currentUser.uid).get();
+        if (user) {
+          console.log('useUserRole: Usuario autenticado, verificando rol...');
+          const userDoc = await firestore().collection('users').doc(user.uid).get();
           if (userDoc.exists()) {
             const role = userDoc.data()?.role;
+            console.log('useUserRole: Rol encontrado:', role);
             if (role === 'user' || role === 'worker') {
               setUserRole(role);
+            } else {
+              setUserRole('user'); // Rol por defecto
             }
+          } else {
+            console.log('useUserRole: Usuario no encontrado en Firestore');
+            setUserRole('user'); // Rol por defecto
           }
+        } else {
+          console.log('useUserRole: No hay usuario autenticado');
+          setUserRole(null);
         }
       } catch (error) {
         console.error("Error al obtener el rol del usuario:", error);
+        setUserRole('user'); // Fallback
       } finally {
         setLoading(false);
       }
-    };
+    });
 
-    fetchUserRole();
+    return unsubscribe;
   }, []);
 
   return { userRole, loading };

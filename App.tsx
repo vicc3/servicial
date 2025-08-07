@@ -1,37 +1,76 @@
-// App.js
 import React from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
-import { PaperProvider, DefaultTheme } from 'react-native-paper';
-//comp navegación principal
-import AppNavigator from './src/navigation/index';
+import { NavigationContainer } from '@react-navigation/native';
+import { PaperProvider } from 'react-native-paper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet } from 'react-native';
+import Navigation from './src/navigation/Navegacion';
 
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: '#6200EE',
-    accent: '#03DAC6',  
-    surfaceVariant: '#f2f2f2', 
-    onSurfaceVariant: '#333', 
-    background: '#ffffff', 
-  },
-};
+class AppErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error?: Error }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
 
-const App = () => {
-  return (
-    <PaperProvider theme={theme}>
-      <SafeAreaView style={styles.container}>
-        <AppNavigator />
-      </SafeAreaView>
-    </PaperProvider>
-  );
-};
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('App Crash:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>La aplicación ha tenido un error</Text>
+          <Text style={styles.errorMessage}>
+            {this.state.error?.message || 'Error desconocido'}
+          </Text>
+        </View>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 const styles = StyleSheet.create({
-  container: {
+  errorContainer: {
     flex: 1,
-    backgroundColor: '#ffffff', 
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  errorMessage: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
   },
 });
+
+const App: React.FC = () => {
+  return (
+    <AppErrorBoundary>
+      <SafeAreaProvider>
+        <PaperProvider>
+          <NavigationContainer>
+            <Navigation />
+          </NavigationContainer>
+        </PaperProvider>
+      </SafeAreaProvider>
+    </AppErrorBoundary>
+  );
+};
 
 export default App;

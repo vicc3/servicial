@@ -86,18 +86,10 @@ class AnalyticsService {
       }
     });
   }
+}
+export const analyticsService = new AnalyticsService();
 
-  // Logging de errores
-  async logError(error: Error, context?: string) {
-    try {
-      await crashlytics().recordError(error);
-      if (context) {
-        await crashlytics().log(context);
-      }
-    } catch (e) {
-      console.error('Error logging to crashlytics:', e);
-    }
-  }
+{/*}
 
   async logCustomError(message: string, stack?: string) {
     try {
@@ -107,8 +99,7 @@ class AnalyticsService {
       }
     } catch (error) {
       console.error('Error logging custom error:', error);
-    }
   }
-}
+  */}
 
-export const analyticsService = new AnalyticsService();
+

@@ -10,6 +10,7 @@ import { ClientStackParamList } from './types';
 //pantallas de cliente
 //import ClientHome from '../screens/Client/ClientHome';
 import ClientProfile from '../screens/ClientScreens/ClientProfileScreen';
+import ClienMain from '../screens/ClientScreens/ClientHomeScreen';
 import ClientHomeScreen from '../screens/ClientScreens/ClientHomeScreen';
 //import ClientSettings from '../screens/Client/ClientSettings';
 //import ClientMessages from '../screens/Client/ClientMessages';
@@ -28,7 +29,7 @@ export const ClientBottomTabs : React.FC = () => {
           let iconName: string;
           
           switch (route.name) {
-            case 'ClientHome':
+            case 'ClientMain':
               iconName = focused ? 'home' : 'home-outline';
               break;
             case 'ClientProfile':
@@ -54,7 +55,7 @@ export const ClientBottomTabs : React.FC = () => {
         },
       })}
       >
-      <Tab.Screen name="ClientHome" component={ClientHomeScreen} />
+      <Tab.Screen name="ClientMain" component={ClientHomeScreen} />
       <Tab.Screen name="ClientProfile" component={ClientProfile} />
     </Tab.Navigator>
   );

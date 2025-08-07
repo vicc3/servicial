@@ -1,7 +1,9 @@
+// android/app/build.gradle
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
-apply plugin: "com.google.gms.google-services"
+apply plugin: "com.google.gms.google-services"      // <-- Primero este
+apply plugin: "com.google.firebase.crashlytics"    // <-- Luego este
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -108,7 +110,15 @@ android {
     }
 }
 
-dependencies {
+// ESTOS BLOQUES DEBEN ESTAR FUERA DEL BLOQUE 'android { ... }'
+// Y DEBEN ESTAR AL MISMO NIVEL QUE 'apply plugin: ...'
+
+repositories { // <-- ¡ESTE BLOQUE DEBE ESTAR AQUÍ, FUERA DE 'android {}'!
+    google()
+    mavenCentral()
+}
+
+dependencies { // <-- ¡ESTE BLOQUE DEBE ESTAR AQUÍ, FUERA DE 'android {}'!
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
@@ -120,15 +130,19 @@ dependencies {
 
     // Import the Firebase BoM (Bill of Materials)
     // Esto asegura que todas las dependencias de Firebase que se añadan estén en versiones compatibles.
-    // Verifica la última versión del BoM en la documentación de Firebase (https://firebase.google.com/docs/android/setup#add_the_sdk)
-    implementation platform('com.google.firebase:firebase-bom:32.x.x') // Reemplaza '32.x.x' con la última versión, por ejemplo, 32.7.4 o más reciente.
-
-    // A partir de aquí, si **no** usaras @react-native-firebase, añadirías las dependencias específicas:
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-auth'
-    implementation 'com.google.firebase:firebase-firestore'
-
-    // PERO, como estás usando @react-native-firebase, estos se agregan automáticamente.
-    // Simplemente asegúrate de haber instalado los módulos de @react-native-firebase que necesitas
-    // (ej. `yarn add @react-native-firebase/auth`) y que el `plugin` de google-services esté aplicado.
+    // Verifica la última versión del BoM en la documentación de Firebase
+    implementation platform('com.google.firebase:firebase-bom:33.16.0') // Versión compatible con React Native Firebase
+    
+    // NO necesitas añadir estas líneas si ya tienes los módulos de @react-native-firebase instalados
+    // ya que @react-native-firebase se encarga de las dependencias nativas.
+    // Si las dejas, podrían causar duplicidades o conflictos.
+    // implementation 'com.google.firebase:firebase-analytics'
+    // implementation 'com.google.firebase:firebase-auth'
+    // implementation 'com.google.firebase:firebase-firestore'
+    // implementation 'com.google.firebase:firebase-database'
+    // implementation 'com.google.firebase:firebase-storage'
+    // implementation 'com.google.firebase:firebase-crashlytics'
+    // implementation 'com.google.firebase:firebase-cloud-messaging'
+    // implementation 'com.google.firebase:firebase-functions'
+    // implementation 'com.google.firebase:firebase-inappmessaging'
 }

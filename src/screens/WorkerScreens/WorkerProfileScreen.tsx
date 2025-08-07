@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Alert, ActivityIndicator, Image, TouchableOpacity, Switch } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { WorkerStackParamList } from '../../navigation/types';
 import { Appbar, useTheme, Title, Text, Card, Button, IconButton } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import BottomNavigationBar from '../navigation/BottomNavigationBar';
+import { WorkerBottomTabs } from '../../navigation/WorkerBottomTabNavigator';
+
 
 // Definimos el tipo de props para la pantalla ProfileWorkerScreen
-type Props = NativeStackScreenProps<RootStackParamList, 'WorkerProfile'>;
+type Props = BottomTabScreenProps<WorkerStackParamList, 'WorkerProfile'>;
 
 interface UserData {
   nombreCompleto: string;
@@ -54,7 +55,11 @@ const ProfileWorkerScreen: React.FC<Props> = ({ navigation }) => {
     try {
       await auth().signOut();
       Alert.alert('Sesión cerrada', 'Has cerrado sesión exitosamente.');
-      navigation.navigate('Login'); // Redirige al usuario a la pantalla de Login
+      // Navigate to Auth stack - this will reset the navigation stack
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Auth' as never }],
+      });
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
       Alert.alert('Error', 'No se pudo cerrar la sesión.');
@@ -160,7 +165,7 @@ const ProfileWorkerScreen: React.FC<Props> = ({ navigation }) => {
       </ScrollView>
 
       {/* Barra de navegación inferior */}
-      <BottomNavigationBar currentScreen="WorkerProfile" />
+      <WorkerBottomTabs />
     </View>
   );
 };

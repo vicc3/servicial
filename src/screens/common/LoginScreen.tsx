@@ -23,8 +23,8 @@ const LoginScreen: React.FC = () => {
     try {
       const result = await firebaseService.signInWithEmailAndPassword(email, password);
       if (result.success) {
-        // Navigate based on user role - for now, default to ClientHome
-        navigation.navigate('ClientHome');
+        // Navigate based on user role - for now, default to ClientApp
+        navigation.navigate('ClientApp');
       } else {
         Alert.alert('Error', 'Credenciales incorrectas');
       }

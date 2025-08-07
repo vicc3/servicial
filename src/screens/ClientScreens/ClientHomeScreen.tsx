@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Image, Dimensions } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { ClientStackParamList } from '../../navigation/types';
 import { useTheme, Title, Paragraph, Card, IconButton, Text, Searchbar, Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-type Props = NativeStackScreenProps<ClientStackParamList, 'ClientHome'>;
+type Props = BottomTabScreenProps<ClientStackParamList, 'ClientMain'>;
 
 const { width } = Dimensions.get('window');
 

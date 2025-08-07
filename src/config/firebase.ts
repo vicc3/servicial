@@ -1,7 +1,9 @@
-// src/config/firebase.ts - Versión optimizada
+// src/config/firebase.ts - Versión simplificada y robusta
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+
+export { auth, firestore, storage };
 
 // Tipos para mejor type safety
 export interface FirebaseUser {
@@ -17,11 +19,36 @@ export interface FirebaseResponse<T = any> {
   error?: string;
 }
 
-// Clase Firebase Service para centralizar operaciones
+// Clase Firebase Service simplificada
 class FirebaseService {
-  // Autenticación
+  private isInitialized = false;
+
+  async initialize(): Promise<boolean> {
+    try {
+      // Verificar que Firebase esté disponible
+      if (!auth || !firestore) {
+        console.error('Firebase modules not available');
+        return false;
+      }
+
+      // Intentar acceder a auth para verificar que esté inicializado
+      await auth().currentUser;
+      this.isInitialized = true;
+      console.log('Firebase initialized successfully');
+      return true;
+    } catch (error) {
+      console.error('Firebase initialization error:', error);
+      return false;
+    }
+  }
+
+  // Autenticación simplificada
   async signInWithEmailAndPassword(email: string, password: string): Promise<FirebaseResponse<FirebaseUser>> {
     try {
+      if (!this.isInitialized) {
+        await this.initialize();
+      }
+
       const userCredential = await auth().signInWithEmailAndPassword(email, password);
       return {
         success: true,
@@ -42,6 +69,10 @@ class FirebaseService {
 
   async createUserWithEmailAndPassword(email: string, password: string): Promise<FirebaseResponse<FirebaseUser>> {
     try {
+      if (!this.isInitialized) {
+        await this.initialize();
+      }
+
       const userCredential = await auth().createUserWithEmailAndPassword(email, password);
       return {
         success: true,
@@ -69,13 +100,15 @@ class FirebaseService {
     }
   }
 
-  // Firestore optimizado con cache
-  async getDocument<T>(collection: string, docId: string, useCache = true): Promise<FirebaseResponse<T>> {
+  // Firestore simplificado
+  async getDocument<T>(collection: string, docId: string): Promise<FirebaseResponse<T>> {
     try {
+      if (!this.isInitialized) {
+        await this.initialize();
+      }
+
       const docRef = firestore().collection(collection).doc(docId);
-      const doc = useCache 
-        ? await docRef.get({ source: 'cache' }).catch(() => docRef.get({ source: 'server' }))
-        : await docRef.get({ source: 'server' });
+      const doc = await docRef.get();
       
       if (doc.exists()) {
         return { success: true, data: { id: doc.id, ...doc.data() } as T };
@@ -89,70 +122,12 @@ class FirebaseService {
 
   async setDocument(collection: string, docId: string, data: any, merge = true): Promise<FirebaseResponse> {
     try {
+      if (!this.isInitialized) {
+        await this.initialize();
+      }
+
       await firestore().collection(collection).doc(docId).set(data, { merge });
       return { success: true };
-    } catch (error: any) {
-      return { success: false, error: error.message };
-    }
-  }
-
-  async updateDocument(collection: string, docId: string, data: any): Promise<FirebaseResponse> {
-    try {
-      await firestore().collection(collection).doc(docId).update({
-        ...data,
-        updatedAt: firestore.FieldValue.serverTimestamp()
-      });
-      return { success: true };
-    } catch (error: any) {
-      return { success: false, error: error.message };
-    }
-  }
-
-  // Consultas optimizadas con paginación
-  async getCollectionWithPagination<T>(
-    collection: string, 
-    limit = 20, 
-    startAfter?: FirebaseFirestoreTypes.DocumentSnapshot,
-    orderBy?: { field: string; direction: 'asc' | 'desc' }
-  ): Promise<FirebaseResponse<{ documents: T[]; lastDoc?: FirebaseFirestoreTypes.DocumentSnapshot }>> {
-    try {
-      let query: FirebaseFirestoreTypes.Query = firestore().collection(collection);
-      
-      if (orderBy) {
-        query = query.orderBy(orderBy.field, orderBy.direction);
-      }
-      
-      if (startAfter) {
-        query = query.startAfter(startAfter);
-      }
-      
-      const snapshot = await query.limit(limit).get();
-      const documents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
-      const lastDoc = snapshot.docs[snapshot.docs.length - 1];
-      
-      return { success: true, data: { documents, lastDoc } };
-    } catch (error: any) {
-      return { success: false, error: error.message };
-    }
-  }
-
-  // Upload de imágenes optimizado
-  async uploadImage(uri: string, path: string, onProgress?: (progress: number) => void): Promise<FirebaseResponse<string>> {
-    try {
-      const reference = storage().ref(path);
-      const task = reference.putFile(uri);
-      
-      if (onProgress) {
-        task.on('state_changed', (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          onProgress(progress);
-        });
-      }
-      
-      await task;
-      const downloadURL = await reference.getDownloadURL();
-      
-      return { success: true, data: downloadURL };
     } catch (error: any) {
       return { success: false, error: error.message };
     }
@@ -166,11 +141,13 @@ class FirebaseService {
       'auth/weak-password': 'La contraseña es muy débil',
       'auth/invalid-email': 'Email inválido',
       'auth/too-many-requests': 'Demasiados intentos fallidos',
+      'auth/network-request-failed': 'Error de conexión',
+      'auth/invalid-credential': 'Credenciales inválidas',
     };
     return errorMessages[errorCode] || 'Error de autenticación';
   }
 }
 
 export const firebaseService = new FirebaseService();
-export { auth, firestore, storage };
+
 

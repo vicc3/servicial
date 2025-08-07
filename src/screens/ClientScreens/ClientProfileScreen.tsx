@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Alert, ActivityIndicator, Image, TouchableOpacity, Switch, Dimensions } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../navigation/types';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { ClientStackParamList } from '../../navigation/types';
 import { Appbar, useTheme, Title, Text, Card, Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import ClientBottomTabs from '../../navigation/ClientBottomTabNavigator';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'ClientProfile'>;
+type Props = BottomTabScreenProps<ClientStackParamList, 'ClientProfile'>;
 
 interface UserData {
   nombreCompleto: string;
@@ -66,7 +65,11 @@ const ClientProfileScreen: React.FC<Props> = ({ navigation }) => {
     try {
       await auth().signOut();
       Alert.alert('Sesión cerrada', 'Has cerrado sesión exitosamente.');
-      navigation.navigate('Login');
+      // Navigate to Auth stack - this will reset the navigation stack
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Auth' as never }],
+      });
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
       Alert.alert('Error', 'No se pudo cerrar la sesión.');
@@ -167,7 +170,7 @@ const ClientProfileScreen: React.FC<Props> = ({ navigation }) => {
       </ScrollView>
 
       {/* Barra de navegación inferior */}
-      <ClientBottomTabs />
+      
     </View>
   );
 };

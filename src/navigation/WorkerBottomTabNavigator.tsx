@@ -8,7 +8,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { WorkerStackParamList } from './types';
 
 //pantallas de trabajador
-//import WorkerHome from '../screens/Worker/WorkerHome';
+import WorkerMain from '../screens/WorkerScreens/WorkerHomeScreen';
 import WorkerProfile from '../screens/WorkerScreens/WorkerProfileScreen';
 //import WorkerSettings from '../screens/Worker/WorkerSettings';
 //import WorkerMessages from '../screens/Worker/WorkerMessages';
@@ -27,7 +27,7 @@ export const WorkerBottomTabs : React.FC = () => {
           let iconName: string;
           
           switch (route.name) {
-            case 'WorkerHome':
+            case 'WorkerMain':
               iconName = focused ? 'home' : 'home-outline';
               break;
             case 'WorkerProfile':
@@ -53,7 +53,7 @@ export const WorkerBottomTabs : React.FC = () => {
         },
       })}
       >
-      {/*<Tab.Screen name="WorkerHome" component={WorkerHome} />*/}
+      <Tab.Screen name="WorkerMain" component={WorkerMain} />
       <Tab.Screen name="WorkerProfile" component={WorkerProfile} />
     </Tab.Navigator>
   );

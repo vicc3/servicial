@@ -18,7 +18,7 @@ export const ClientStackNavigator : React.FC = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             {/* tab navigator como pantalla principal */}
-            <Stack.Screen name="ClientHome" component={ ClientBottomTabs } />
+            <Stack.Screen name="ClientMain" component={ ClientBottomTabs } />
             {/*<Stack.Screen name="ClientProfile" component={ClientProfile} />*/}
 
             {/* Pantallas de cliente con tabs */}

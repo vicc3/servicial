@@ -6,7 +6,7 @@ import { WorkerStackParamList } from '../../navigation/types';
 import { useTheme, Title, Text, Card, Button, IconButton } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-type Props = NativeStackScreenProps<WorkerStackParamList, 'WorkerHome'>;
+type Props = NativeStackScreenProps<WorkerStackParamList, 'WorkerMain'>;
 
 const WorkerHomeScreen: React.FC<Props> = ({ navigation }) => {
   const theme = useTheme();
@@ -63,7 +63,7 @@ const WorkerHomeScreen: React.FC<Props> = ({ navigation }) => {
           ))}
         </View>
 
-        {/* Trabajos recientes */}
+        {/* Trabajos recientes 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Title style={styles.sectionTitle}>Trabajos Recientes</Title>
@@ -97,6 +97,7 @@ const WorkerHomeScreen: React.FC<Props> = ({ navigation }) => {
             </Card>
           ))}
         </View>
+        */}
       </ScrollView>
     </View>
   );
@@ -167,4 +168,8 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     flexDirection: 'row',
-    justifyContent
+    justifyContent: 'center'
+  }
+});
+
+export default WorkerHomeScreen;

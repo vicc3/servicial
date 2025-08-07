@@ -18,7 +18,7 @@ export const WorkerStackNavigator : React.FC = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             {/* tab navigator como pantalla principal */}
-            <Stack.Screen name="WorkerHome" component={ WorkerBottomTabs } />
+            <Stack.Screen name="WorkerMain" component={ WorkerBottomTabs } />
             {/* Pantallas de trabajador con tabs */}
             <Stack.Screen name="WorkerProfile" component={ WorkerProfile } 
             options={{ headerShown: true, title: 'Perfil', presentation: 'modal' }}/>
